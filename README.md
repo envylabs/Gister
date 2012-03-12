@@ -1,6 +1,7 @@
 # Gister
 
-TODO: Write a gem description
+Gister provides a way to cache gister embed code, basically creating a middleware that acts like a reverse-proxy
+to the gist.github.com api.
 
 ## Installation
 
@@ -17,8 +18,6 @@ Or install it yourself as:
     $ gem install gister
 
 ## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
