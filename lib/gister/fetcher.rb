@@ -2,11 +2,19 @@ require 'faraday'
 
 module Gister
   class Fetcher
+    class MemoryStore
+      def initialize; @store = Hash.new; end
+      def set(k,v); @store[k]=v; end
+      def get(k); @store[k]; end
+    end
+
     ClientError = Class.new(StandardError)
     GistNotFound = Class.new(ClientError)
 
-    def initialize
-      @store = Hash.new
+    attr_writer :store
+
+    def initialize(store = MemoryStore.new)
+      @store = store
     end
 
     def fetch(key)
@@ -18,16 +26,19 @@ module Gister
         result
       end
     end
-
-    def get(key)
-      @store[key]
-    end
-
-    def set(key, value)
-      @store[key] = value
-    end
     
+    def get(k); @store.get(cache_bust(k)); end
+    def set(k, v); @store.set(cache_bust(k), v); end
+
     private
+
+    def cache_bust(key)
+      cache_buster + key
+    end
+
+    def cache_buster
+      ENV['CACHE_BUSTER'].to_s
+    end
 
     def fetch_result(key)
       path, params = parse_uri(key)

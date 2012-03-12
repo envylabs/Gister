@@ -12,6 +12,14 @@ describe Gister::Fetcher do
       subject.set(key, "hello")
       subject.get(key).should ==  "hello"
     end
+
+    it "should bust the cache if the ENV changes" do
+      subject.set key, "hello"
+      ENV["CACHE_BUSTER"] = "1"
+      subject.get(key).should == nil
+      subject.set key, "hello"
+      subject.get(key).should == "hello"
+    end
   end
 
   describe "fetch" do
