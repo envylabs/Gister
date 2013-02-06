@@ -43,7 +43,7 @@ describe Gister::Fetcher do
 
       context "and there is a successful response from gist" do
         let(:key) {
-          "https://gist.github.com/1996296.json?file=challenge-1-2.js"
+          "https://gist.github.com/codeschool-courses/1996296.json?file=challenge-1-2.js"
         }
 
         it "should return the response gist" do

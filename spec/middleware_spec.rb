@@ -9,49 +9,73 @@ describe Gister::Middleware do
   subject { response }
 
   describe "when responding to a request with a gist path" do
-    let(:path) {
-      "/gist/1111.json?file=app.js&callback=jQueryCallback&_=12012981921"
-    }
-
-    context 'and getting content from the fetcher works' do
-      let(:response_body) {
-        "{hello:'world'}"
+    context "and the path has a github username in it" do
+      let(:path) {
+        "/gist/codeschool-courses/1111.json?file=app.js&callback=jQueryCallback&_=12012981921"
       }
 
-      before do
-        app.stub(:fetch_by_path).and_return(response_body)
-      end
+      context 'and getting content from the fetcher works' do
+        let(:response_body) {
+          "{hello:'world'}"
+        }
 
-      it "should use the url as the key to fetcher with the callback or timestamp" do
-        app.should_receive(:fetch_by_path).with("https://gist.github.com/1111.json?file=app.js").and_return(response_body)
+        before do
+          app.stub(:fetch_by_path).and_return(response_body)
+        end
 
-        subject
-      end
+        it "should use the url as the key to fetcher with the callback or timestamp" do
+          app.should_receive(:fetch_by_path).with("https://gist.github.com/codeschool-courses/1111.json?file=app.js").and_return(response_body)
 
-      it "should wrap the response from fetcher in the callback param" do
-        subject[2].should == ["jQueryCallback(#{response_body})"]
-      end
-
-      it "should return a 200" do
-        subject[0].should == 200
-      end
-
-      it "should have a content type of application/javascript" do
-        subject[1]['Content-Type'].should == "application/javascript"
+          subject
+        end
       end
     end
 
-    context 'and getting content from the fetcher raises a ClientError' do
-      before do
-        app.stub(:fetch_by_path).and_raise(Gister::Fetcher::ClientError)
+    context "and the path doesn't have a github username in it" do
+      let(:path) {
+        "/gist/1111.json?file=app.js&callback=jQueryCallback&_=12012981921"
+      }
+
+      context 'and getting content from the fetcher works' do
+        let(:response_body) {
+          "{hello:'world'}"
+        }
+
+        before do
+          app.stub(:fetch_by_path).and_return(response_body)
+        end
+
+        it "should use the url as the key to fetcher with the callback or timestamp" do
+          app.should_receive(:fetch_by_path).with("https://gist.github.com/1111.json?file=app.js").and_return(response_body)
+
+          subject
+        end
+
+        it "should wrap the response from fetcher in the callback param" do
+          subject[2].should == ["jQueryCallback(#{response_body})"]
+        end
+
+        it "should return a 200" do
+          subject[0].should == 200
+        end
+
+        it "should have a content type of application/javascript" do
+          subject[1]['Content-Type'].should == "application/javascript"
+        end
       end
 
-      it "should return a 404" do
-        subject[0].should == 404
-      end
+      context 'and getting content from the fetcher raises a ClientError' do
+        before do
+          app.stub(:fetch_by_path).and_raise(Gister::Fetcher::ClientError)
+        end
 
-      it "should have an empty body" do
-        subject[2].should == [""]
+        it "should return a 404" do
+          subject[0].should == 404
+        end
+
+        it "should have an empty body" do
+          subject[2].should == [""]
+        end
       end
     end
   end

@@ -11,7 +11,7 @@ module Gister
 
     def call(env)
       request = Rack::Request.new env
-      if request.path =~ /^\/gist\/[0-9]+.json/
+      if request.path =~ /^\/gist\/([A-Za-z\-0-9]+\/)?[0-9]+.json/
         respond_to_failures do
           [200, {'Content-Type' => 'application/javascript'}, [get_body_content(request)]]
         end
